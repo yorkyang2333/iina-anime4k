@@ -6,7 +6,7 @@
   "scripts": {
     "serve-sidebar": "parcel serve ui/sidebar/sidebar.html --dist-dir dist/ui/sidebar",
     "build": "rm -rf dist && python3 build-shaders.py && parcel build .",
-    "pack": "npm run build && rm -rf anime4k.iinaplugin && mkdir anime4k.iinaplugin && cp -r dist Info.json package.json anime4k.iinaplugin/ && cd anime4k.iinaplugin && zip -r ../anime4k.iinaplgz .",
+    "pack": "npm run build && rm -rf anime4k.iinaplugin anime4k.iinaplgz && mkdir anime4k.iinaplugin && cp -r dist Info.json package.json anime4k.iinaplugin/ && cd anime4k.iinaplugin && zip -r ../anime4k.iinaplgz .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",

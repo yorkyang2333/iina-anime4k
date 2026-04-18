@@ -3,6 +3,21 @@ import { presets, modes } from "./shaders";
 
 const { core, event, menu, mpv, console, file, utils, preferences, sidebar, overlay } = iina;
 
+const sidebarMessages = {
+  ready: "anime4k:ready",
+  applyMode: "anime4k:applyMode",
+  setQuality: "anime4k:setQuality",
+  setAutoApply: "anime4k:setAutoApply",
+  state: "anime4k:state"
+};
+
+const legacySidebarMessages = {
+  ready: "ready",
+  apply: "apply",
+  toggleAutoApply: "toggleAutoApply",
+  state: "state"
+};
+
 console.log("Anime4K Plugin is loading...");
 
 // 1. Install shaders to @data/ directory on startup
@@ -42,34 +57,81 @@ function showOSD(text) {
   // Let's use core.osd for simplicity and native feel.
 }
 
-function applyShader(mode, quality) {
-  if (mode === "off") {
-    mpv.command("change-list", ["glsl-shaders", "clr", ""]);
-    showOSD("Anime4K: Off");
-    currentMode = "off";
+function sendSidebarState() {
+  const state = {
+    mode: currentMode,
+    quality: currentQuality,
+    autoApply: autoApply
+  };
+
+  console.log(`Anime4K sidebar: post state ${JSON.stringify(state)}`);
+  sidebar.postMessage(sidebarMessages.state, state);
+  sidebar.postMessage(legacySidebarMessages.state, state);
+}
+
+function applyShader(mode, quality = currentQuality) {
+  try {
+    console.log(`Anime4K sidebar: applyShader ${mode} / ${quality}`);
+
+    if (mode === "off") {
+      mpv.command("change-list", ["glsl-shaders", "clr", ""]);
+      showOSD("Anime4K: Off");
+      currentMode = "off";
+      saveState();
+      updateMenu();
+      sendSidebarState();
+      return true;
+    }
+
+    const shaderList = presets[quality] && presets[quality][mode];
+    if (!shaderList) {
+      throw new Error(`Invalid mode/quality: ${mode} / ${quality}`);
+    }
+
+    const paths = shaderList.map(s => utils.resolvePath(`@data/${s}`)).join(":");
+    mpv.command("change-list", ["glsl-shaders", "set", paths]);
+
+    const qualityText = quality === "hq" ? "HQ" : "Fast";
+    showOSD(`Anime4K: Mode ${mode} (${qualityText})`);
+
+    currentMode = mode;
+    currentQuality = quality;
     saveState();
     updateMenu();
-    updateSidebar();
+    sendSidebarState();
+    return true;
+  } catch (error) {
+    const message = error && error.message ? error.message : String(error);
+    console.error(`Anime4K: Failed to apply shader: ${message}`);
+    showOSD("Anime4K: Failed to apply shader");
+    sendSidebarState();
+    return false;
+  }
+}
+
+function setQuality(quality) {
+  if (!presets[quality]) {
+    console.error(`Anime4K: Invalid quality tier: ${quality}`);
+    sendSidebarState();
     return;
   }
 
-  const shaderList = presets[quality][mode];
-  if (!shaderList) {
-    console.error(`Invalid mode/quality: ${mode} / ${quality}`);
+  if (currentMode !== "off") {
+    applyShader(currentMode, quality);
     return;
   }
 
-  const paths = shaderList.map(s => utils.resolvePath(`@data/${s}`)).join(":");
-  mpv.command("change-list", ["glsl-shaders", "set", paths]);
-  
-  const qualityText = quality === "hq" ? "HQ" : "Fast";
-  showOSD(`Anime4K: Mode ${mode} (${qualityText})`);
-  
-  currentMode = mode;
   currentQuality = quality;
   saveState();
   updateMenu();
-  updateSidebar();
+  sendSidebarState();
+}
+
+function setAutoApply(value) {
+  autoApply = value;
+  saveState();
+  updateMenu();
+  sendSidebarState();
 }
 
 // 3. Menu System
@@ -104,21 +166,17 @@ presetMenuItems.push(offMenu);
 
 const qualityMenu = menu.item("Quality Tier");
 const fastQualityMenu = menu.item("Fast (M1/M2/Intel)", () => {
-  if (currentMode !== "off") applyShader(currentMode, "fast");
-  else { currentQuality = "fast"; saveState(); updateMenu(); updateSidebar(); }
+  setQuality("fast");
 }, { keyBinding: "7" });
 const hqQualityMenu = menu.item("HQ (M1 Pro/Max/Ultra)", () => {
-  if (currentMode !== "off") applyShader(currentMode, "hq");
-  else { currentQuality = "hq"; saveState(); updateMenu(); updateSidebar(); }
+  setQuality("hq");
 }, { keyBinding: "8" });
 
 qualityMenu.addSubMenuItem(fastQualityMenu);
 qualityMenu.addSubMenuItem(hqQualityMenu);
 
 const autoApplyMenu = menu.item("Auto-Apply on Video Load", () => {
-  autoApply = !autoApply;
-  saveState();
-  updateMenu();
+  setAutoApply(!autoApply);
 });
 
 const presetSubMenu = menu.item("Presets");
@@ -134,11 +192,64 @@ updateMenu();
 
 // 4. Sidebar System
 let sidebarLoaded = false;
+let hasLoggedSidebarReady = false;
+
+function logSidebarReady(protocol) {
+  if (hasLoggedSidebarReady) return;
+  hasLoggedSidebarReady = true;
+  console.log(`Anime4K sidebar: received ${protocol} ready`);
+}
+
+function registerSidebarMessageHandlers() {
+  sidebar.onMessage(sidebarMessages.ready, () => {
+    logSidebarReady("modern");
+    sendSidebarState();
+  });
+
+  sidebar.onMessage(sidebarMessages.applyMode, (data) => {
+    console.log(`Anime4K sidebar: received applyMode ${data && data.mode}`);
+    applyShader(data.mode, currentQuality);
+  });
+
+  sidebar.onMessage(sidebarMessages.setQuality, (data) => {
+    console.log(`Anime4K sidebar: received setQuality ${data && data.quality}`);
+    setQuality(data.quality);
+  });
+
+  sidebar.onMessage(sidebarMessages.setAutoApply, (data) => {
+    console.log(`Anime4K sidebar: received setAutoApply ${data && data.autoApply}`);
+    setAutoApply(data.autoApply);
+  });
+
+  sidebar.onMessage(legacySidebarMessages.ready, () => {
+    logSidebarReady("legacy");
+    sendSidebarState();
+  });
+
+  sidebar.onMessage(legacySidebarMessages.apply, (data) => {
+    if (!data) return;
+    console.log(`Anime4K sidebar: received legacy apply ${JSON.stringify(data)}`);
+
+    if (data.mode === currentMode && data.quality && data.quality !== currentQuality) {
+      setQuality(data.quality);
+      return;
+    }
+
+    applyShader(data.mode, data.quality || currentQuality);
+  });
+
+  sidebar.onMessage(legacySidebarMessages.toggleAutoApply, (data) => {
+    if (!data) return;
+    console.log(`Anime4K sidebar: received legacy toggleAutoApply ${data.autoApply}`);
+    setAutoApply(data.autoApply);
+  });
+}
 
 function loadSidebar() {
   if (sidebarLoaded) return;
   sidebarLoaded = true;
   sidebar.loadFile("dist/ui/sidebar/sidebar.html");
+  registerSidebarMessageHandlers();
 }
 
 if (core.window.loaded) {
@@ -146,29 +257,6 @@ if (core.window.loaded) {
 }
 
 event.on("iina.window-loaded", loadSidebar);
-
-function updateSidebar() {
-  sidebar.postMessage("state", {
-    mode: currentMode,
-    quality: currentQuality,
-    autoApply: autoApply
-  });
-}
-
-sidebar.onMessage("apply", (data) => {
-  applyShader(data.mode, data.quality);
-});
-
-sidebar.onMessage("toggleAutoApply", (data) => {
-  autoApply = data.autoApply;
-  saveState();
-  updateMenu();
-});
-
-// Sync sidebar when it's ready
-sidebar.onMessage("ready", () => {
-  updateSidebar();
-});
 
 // 5. Auto Apply
 event.on("iina.file-loaded", () => {
@@ -180,7 +268,7 @@ event.on("iina.file-loaded", () => {
     currentMode = "off";
     saveState();
     updateMenu();
-    updateSidebar();
+    sendSidebarState();
   }
 });
 

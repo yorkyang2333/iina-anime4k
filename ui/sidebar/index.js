@@ -10,23 +10,73 @@ const modes = [
   { id: "C+A", name: "Mode C+A", desc: "Ultra Quality (480p)" }
 ];
 
-let currentState = { mode: "off", quality: "fast", autoApply: true };
+const sidebarMessages = {
+  ready: "anime4k:ready",
+  applyMode: "anime4k:applyMode",
+  setQuality: "anime4k:setQuality",
+  setAutoApply: "anime4k:setAutoApply",
+  state: "anime4k:state"
+};
 
-iina.onMessage("state", (data) => {
+const legacySidebarMessages = {
+  ready: "ready",
+  apply: "apply",
+  toggleAutoApply: "toggleAutoApply",
+  state: "state"
+};
+
+let currentState = { mode: "off", quality: "fast", autoApply: true };
+let hasState = false;
+let hasModernState = false;
+let readyTimer = null;
+let readyAttempts = 0;
+let activeProtocol = "modern";
+
+iina.onMessage(sidebarMessages.state, (data) => {
+  hasModernState = true;
+  activeProtocol = "modern";
   currentState = data;
+  hasState = true;
+  stopReadyRetry();
+  render();
+});
+
+iina.onMessage(legacySidebarMessages.state, (data) => {
+  if (!hasModernState) {
+    activeProtocol = "legacy";
+  }
+
+  currentState = data;
+  hasState = true;
+  stopReadyRetry();
   render();
 });
 
 function applyMode(id) {
-  iina.postMessage("apply", { mode: id, quality: currentState.quality });
+  if (activeProtocol === "legacy") {
+    iina.postMessage(legacySidebarMessages.apply, { mode: id, quality: currentState.quality });
+    return;
+  }
+
+  iina.postMessage(sidebarMessages.applyMode, { mode: id });
 }
 
-function updateQuality(q) {
-  iina.postMessage("apply", { mode: currentState.mode, quality: q });
+function setQuality(q) {
+  if (activeProtocol === "legacy") {
+    iina.postMessage(legacySidebarMessages.apply, { mode: currentState.mode, quality: q });
+    return;
+  }
+
+  iina.postMessage(sidebarMessages.setQuality, { quality: q });
 }
 
 function toggleAutoApply(val) {
-  iina.postMessage("toggleAutoApply", { autoApply: val });
+  if (activeProtocol === "legacy") {
+    iina.postMessage(legacySidebarMessages.toggleAutoApply, { autoApply: val });
+    return;
+  }
+
+  iina.postMessage(sidebarMessages.setAutoApply, { autoApply: val });
 }
 
 function render() {
@@ -75,21 +125,51 @@ function render() {
   `;
   
   app.innerHTML = html;
+
+  app.querySelectorAll("[data-mode]").forEach((el) => {
+    el.addEventListener("click", () => {
+      applyMode(el.getAttribute("data-mode"));
+    });
+  });
+
+  app.querySelectorAll("[data-quality]").forEach((el) => {
+    el.addEventListener("click", () => {
+      setQuality(el.getAttribute("data-quality"));
+    });
+  });
+
+  const checkbox = document.getElementById("auto-apply-check");
+  if (checkbox) {
+    checkbox.addEventListener("change", (e) => {
+      toggleAutoApply(e.target.checked);
+    });
+  }
 }
 
-document.addEventListener("click", function(e) {
-  if (!e.target || !e.target.closest) return;
-  var modeBtn = e.target.closest('[data-mode]');
-  if (modeBtn) return applyMode(modeBtn.getAttribute('data-mode'));
-  var qualBtn = e.target.closest('[data-quality]');
-  if (qualBtn) return updateQuality(qualBtn.getAttribute('data-quality'));
-});
+function postReady() {
+  iina.postMessage(sidebarMessages.ready, {});
+  iina.postMessage(legacySidebarMessages.ready, {});
+}
 
-document.addEventListener("change", function(e) {
-  if (e.target && e.target.id === 'auto-apply-check') {
-    toggleAutoApply(e.target.checked);
+function stopReadyRetry() {
+  if (readyTimer) {
+    clearInterval(readyTimer);
+    readyTimer = null;
   }
-});
+}
+
+function startReadyRetry() {
+  postReady();
+  readyTimer = setInterval(() => {
+    if (hasState || readyAttempts >= 10) {
+      stopReadyRetry();
+      return;
+    }
+
+    readyAttempts += 1;
+    postReady();
+  }, 250);
+}
 
 // Avoid the timing race condition completely!
 var hasInit = false;
@@ -97,7 +177,7 @@ function init() {
   if (hasInit) return;
   hasInit = true;
   render();
-  iina.postMessage("ready", {});
+  startReadyRetry();
 }
 
 // In case it's in body, fire immediately if DOM is already parsed
