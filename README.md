@@ -34,6 +34,6 @@ Once the compilation is complete, you will find a readily packaged `anime4k.iina
 ### How to Use
 > **Note:** If you just want to use the plugin, there is no need to compile it yourself. Pre-compiled versions are readily available.
 
-1. Go to the [Releases](https://github.com/your-username/anime4k-iina/releases) page and download the latest compiled `anime4k.iinaplgz` file.
+1. Go to the [Releases](https://github.com/yorkyang2333/iina-anime4k/releases) page and download the latest compiled `anime4k.iinaplgz` file.
 2. Double-click the downloaded file to automatically install it into IINA, or install it manually via IINA's `Settings -> Plugins` menu.
 3. Open a video, toggle the IINA **Sidebar**, switch to the **Anime4K** tab, and configure your preferred upscaling presets. Enjoy the enhanced visuals immediately!

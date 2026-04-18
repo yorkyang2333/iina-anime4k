@@ -34,6 +34,6 @@
 ### 如何使用
 > **提示：** 如果您只是期望使用此插件，完全不需要自行进行枯燥的编译操作，您可以直接下载发行的编译版本。
 
-1. 前往 GitHub 的 [Releases](https://github.com/your-username/anime4k-iina/releases)（发行版）页面，下载最新发布的 `anime4k.iinaplgz` 插件文件。
+1. 前往 GitHub 的 [Releases](https://github.com/yorkyang2333/iina-anime4k/releases)（发行版）页面，下载最新发布的 `anime4k.iinaplgz` 插件文件。
 2. 随后双击下载的插件文件即可触发一键安装功能，或者您只需前往 IINA 播放器的“设置 -> 插件”界面中选择手动加载即可。
 3. 随意播放一个视频内容，打开 IINA **侧边栏**并切换至 **Anime4K** 面板；在此处开启渲染、选择所需的画质预设以及模式等。即刻享受画面飞升降临！
