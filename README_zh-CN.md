@@ -2,38 +2,59 @@
 
 [English](README.md)
 
-### 项目概况
-**Anime4K for IINA** 是一款专为 macOS 下的 [IINA 播放器](https://iina.io/) 打造的原生插件，将著名的 [Anime4K](https://github.com/bloc97/Anime4K) 实时高质量动漫放大着色器直接无缝集成其中。
+**Anime4K for IINA** 是一款面向 macOS [IINA](https://iina.io/) 的插件，用来把 [Anime4K](https://github.com/bloc97/Anime4K) GLSL 着色器直接接入 IINA。插件首次启动时会把内置着色器写入插件数据目录，之后通过 IINA/mpv 的 `glsl-shaders` 列表动态切换效果，因此无需手动维护 `mpv.conf`，也不用自己处理着色器路径。
 
-本项目致力于消除所有繁琐的手动配置步骤，为您提供开箱即用、顺滑的实时动态画质增强体验。
+## 功能亮点
 
-### 核心优势
-- **原生界面集成**：通过 IINA 侧边栏和原生菜单完美融入播放器，告别手动编写 `mpv.conf` 的烦恼以及修改着色器玄学路径。
-- **实时无缝切换**：可以在不中断播放的情况下，于侧边栏 UI 面板中即时切换各种画质预设（快速 / 高质量）与增强模式（模式 A/B/C 等）。
-- **全自动化运行配置**：插件自动构建内嵌着色器脚本，拥有全自动着色器加载与动态注入能力，零配置即可使用。
-- **全局快捷键支持**：即使不常驻侧边栏也能随时通过键盘快捷键对画面调整和插件控制，实现沉浸式观影体验。
+- **贴合 IINA 的使用方式**：通过 Anime4K 侧边栏、插件菜单和 IINA 原生 OSD 完成控制，不打断播放流程。
+- **两档质量选项**：**Fast** 更轻量，适合优先保证流畅；**HQ** 使用更高质量的 shader 变体，更适合性能较强的设备。
+- **六组预设链路**：支持 Mode A、B、C、A+A、B+B、C+A，可在播放中实时切换。
+- **自动应用**：开启后，新视频载入时会继续应用上一次选择的模式；也可以在侧边栏或菜单中关闭。
+- **菜单快捷键**：`1`-`6` 对应六组模式，`0` 关闭 Anime4K，`7` 切换 Fast，`8` 切换 HQ。
+- **一键打包**：`npm run pack` 会构建侧边栏界面、嵌入 Anime4K 着色器，并生成 `anime4k.iinaplgz`。
 
-### 如何编译
-如需自行从源码进行编译，您的系统需事先安装 **Node.js** 和 **npm**。此外，打包着色器脚本同样需要依赖系统环境的 Python 3。
+## 预设选择
 
-1. 克隆本项目：
-   ```bash
-   git clone https://github.com/your-username/anime4k-iina.git
-   cd anime4k-iina
-   ```
-2. 安装项目所需依赖模块：
-   ```bash
-   npm install
-   ```
-3. 构建着色器并对插件进行一键打包工作：
-   ```bash
-   npm run pack
-   ```
-构建流程结束后，您即可在项目的根目录下找到已编译完毕并打包的 `anime4k.iinaplgz` 扩展文件。
+| 预设 | 建议起点 |
+| --- | --- |
+| Mode A | 大多数 1080p 动画，以及存在压缩、线条退化的片源 |
+| Mode B | 720p 动画，或 Mode A 看起来过强的片源 |
+| Mode C | 480p 动画、噪点较多的片源，或更需要先降噪的内容 |
+| Mode A+A | 更高质量的 Mode A 链路，速度更慢，效果也更激进 |
+| Mode B+B | 更高质量的 Mode B 链路，速度更慢，效果也更激进 |
+| Mode C+A | 在 Mode C 基础上追加重建，适合更难处理的低分辨率片源 |
 
-### 如何使用
-> **提示：** 如果您只是期望使用此插件，完全不需要自行进行枯燥的编译操作，您可以直接下载发行的编译版本。
+多数视频可以先从 **Fast + Mode A** 开始。如果 GPU 仍有余量，再尝试 **HQ** 或双阶段模式；如果画面出现过锐化、噪点放大或振铃，退回更轻的模式会更稳。
 
-1. 前往 GitHub 的 [Releases](https://github.com/yorkyang2333/iina-anime4k/releases)（发行版）页面，下载最新发布的 `anime4k.iinaplgz` 插件文件。
-2. 随后双击下载的插件文件即可触发一键安装功能，或者您只需前往 IINA 播放器的“设置 -> 插件”界面中选择手动加载即可。
-3. 随意播放一个视频内容，打开 IINA **侧边栏**并切换至 **Anime4K** 面板；在此处开启渲染、选择所需的画质预设以及模式等。即刻享受画面飞升降临！
+## 安装使用
+
+1. 前往 [Releases](https://github.com/yorkyang2333/iina-anime4k/releases) 下载 `anime4k.iinaplgz`，或按下方步骤自行构建。
+2. 双击插件包安装到 IINA，或在 IINA 的 `设置 -> 插件` 中手动安装。
+3. 打开任意视频，显示 IINA 侧边栏，切换到 **Anime4K** 标签页，然后选择质量档位和预设模式。
+
+## 从源码构建
+
+构建前请准备：
+
+- 已安装 IINA 的 macOS 环境
+- Node.js 与 npm
+- Python 3
+- Git 子模块，因为上游 Anime4K 着色器位于 `Anime4K/`
+
+```bash
+git clone https://github.com/yorkyang2333/iina-anime4k.git
+cd iina-anime4k
+git submodule update --init --recursive
+npm install
+npm run pack
+```
+
+构建完成后，仓库根目录会生成 `anime4k.iinaplgz` 插件包。
+
+## 开发说明
+
+- `src/index.js` 是 IINA 插件运行时，负责安装 shader、持久化状态、菜单、侧边栏通信、OSD 和自动应用。
+- `src/shaders.js` 定义 Fast/HQ 两档预设链路。
+- `ui/sidebar/` 存放侧边栏 Web UI。
+- `build-shaders.py` 会读取 `Anime4K/glsl/**/*.glsl`，生成 `src/shaders-data.js`。
+- `dist/`、`src/shaders-data.js`、`anime4k.iinaplugin/` 和 `anime4k.iinaplgz` 都是构建产物，已按预期被 Git 忽略。
