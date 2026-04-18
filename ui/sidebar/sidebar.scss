@@ -1,0 +1,177 @@
+.sidebar-container {
+  display: flex;
+  flex-direction: column;
+  padding: 8px 4px;
+}
+
+h2 {
+  margin: 0 0 4px 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.subtitle {
+  margin: 0 0 16px 0;
+  color: #777;
+  font-size: 13px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .subtitle {
+    color: #999;
+  }
+}
+
+.section {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.button-group {
+  display: flex;
+  background: rgba(0,0,0,0.05);
+  border-radius: 6px;
+  padding: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .button-group {
+    background: rgba(255,255,255,0.1);
+  }
+}
+
+.button-group button {
+  flex: 1;
+  background: transparent;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  color: inherit;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.button-group button.active {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  font-weight: 500;
+}
+
+@media (prefers-color-scheme: dark) {
+  .button-group button.active {
+    background: #444;
+    color: #fff;
+  }
+}
+
+.modes-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.mode-card {
+  background: rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mode-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+}
+
+.mode-card:hover {
+  background: rgba(0,0,0,0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  .mode-card:hover {
+    background: rgba(255,255,255,0.1);
+  }
+}
+
+.mode-card.active {
+  background: #e3f2fd;
+  border-color: #2196f3;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mode-card.active {
+    background: rgba(33, 150, 243, 0.2);
+    border-color: #2196f3;
+  }
+}
+
+.mode-card h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mode-card p {
+  margin: 0;
+  font-size: 12px;
+  color: #666;
+}
+
+@media (prefers-color-scheme: dark) {
+  .mode-card p {
+    color: #aaa;
+  }
+}
+
+.off-button {
+  background: transparent;
+  color: #f44336;
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  width: 100%;
+}
+
+.off-button:hover {
+  background: rgba(244, 67, 54, 0.1);
+}
+
+.options-section {
+  background: rgba(0,0,0,0.02);
+  padding: 12px;
+  border-radius: 8px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .options-section {
+    background: rgba(255,255,255,0.03);
+  }
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.toggle-label input {
+  margin-right: 8px;
+}

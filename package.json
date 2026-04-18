@@ -1,0 +1,49 @@
+{
+  "name": "anime4k",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "serve-sidebar": "parcel serve ui/sidebar/sidebar.html --dist-dir dist/ui/sidebar",
+    "build": "rm -rf dist && python3 build-shaders.py && parcel build .",
+    "pack": "npm run build && rm -rf anime4k.iinaplugin && mkdir anime4k.iinaplugin && cp -r dist Info.json package.json anime4k.iinaplugin/ && cd anime4k.iinaplugin && zip -r ../anime4k.iinaplgz .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.8.3",
+    "iina-plugin-definition": "^0.0.7",
+    "prettier": "^2.8.8",
+    "process": "^0.11.10"
+  },
+  "dependencies": {
+    "parcel": "^2.8.3",
+    "parcel-optimizer-webview": "git+https://github.com/iina/parcel-optimizer-webview.git"
+  },
+  "browserslist": "safari >= 9",
+  "entry": "src/index.js",
+  "targets": {
+    "main": false,
+    "overlay": {
+      "distDir": "./dist/ui/overlay",
+      "source": "ui/overlay/index.html",
+      "publicUrl": "./"
+    },
+    "sidebar": {
+      "distDir": "./dist/ui/sidebar",
+      "source": "ui/sidebar/sidebar.html",
+      "publicUrl": "./"
+    },
+    "global": {
+      "distDir": "./dist/",
+      "source": "src/global.js",
+      "isLibrary": false
+    },
+    "entry": {
+      "distDir": "./dist/",
+      "source": "src/index.js",
+      "isLibrary": false
+    }
+  }
+}

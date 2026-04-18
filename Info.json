@@ -1,0 +1,25 @@
+{
+  "name": "Anime4K",
+  "identifier": "com.yorkyang2333.anime4k",
+  "version": "1.0.0",
+  "description": "IINA plugin for Anime4K",
+  "author": {
+    "name": "yorkyang2333",
+    "email": "yangyork097@gmail.com"
+  },
+  "entry": "dist/index.js",
+  "globalEntry": "dist/global.js",
+  "permissions": [
+    "show-osd",
+    "video-overlay",
+    "file-system"
+  ],
+  "sidebarTab": {
+    "name": "Anime4K"
+  },
+  "preferenceDefaults": {
+    "quality": "fast",
+    "mode": "off",
+    "autoApply": true
+  }
+}
