@@ -133,9 +133,19 @@ menu.addItem(autoApplyMenu);
 updateMenu();
 
 // 4. Sidebar System
-event.on("iina.window-loaded", () => {
+let sidebarLoaded = false;
+
+function loadSidebar() {
+  if (sidebarLoaded) return;
+  sidebarLoaded = true;
   sidebar.loadFile("dist/ui/sidebar/sidebar.html");
-});
+}
+
+if (core.window.loaded) {
+  loadSidebar();
+}
+
+event.on("iina.window-loaded", loadSidebar);
 
 function updateSidebar() {
   sidebar.postMessage("state", {

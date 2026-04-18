@@ -96,6 +96,7 @@ var hasInit = false;
 function init() {
   if (hasInit) return;
   hasInit = true;
+  render();
   iina.postMessage("ready", {});
 }
 
