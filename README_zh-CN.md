@@ -58,3 +58,7 @@ npm run pack
 - `ui/sidebar/` 存放侧边栏 Web UI。
 - `build-shaders.py` 会读取 `Anime4K/glsl/**/*.glsl`，生成 `src/shaders-data.js`。
 - `dist/`、`src/shaders-data.js`、`anime4k.iinaplugin/` 和 `anime4k.iinaplgz` 都是构建产物，已按预期被 Git 忽略。
+
+## 友情链接
+
+[![LINUXDO](https://img.shields.io/badge/%E7%A4%BE%E5%8C%BA-LINUXDO-0086c9?style=for-the-badge&labelColor=555555)](https://linux.do)

@@ -58,3 +58,7 @@ The packaged plugin will be written to `anime4k.iinaplgz` in the repository root
 - `ui/sidebar/` contains the sidebar web UI.
 - `build-shaders.py` reads `Anime4K/glsl/**/*.glsl` and generates `src/shaders-data.js`.
 - `dist/`, `src/shaders-data.js`, `anime4k.iinaplugin/`, and `anime4k.iinaplgz` are generated build outputs and are intentionally ignored by Git.
+
+## Friendly Links
+
+[![LINUXDO](https://img.shields.io/badge/%E7%A4%BE%E5%8C%BA-LINUXDO-0086c9?style=for-the-badge&labelColor=555555)](https://linux.do)
