@@ -77,7 +77,8 @@
       Select the display language for Anime4K OSD and side panel.
     </p>
     <div style="margin-top: 6px">
-      <select id="pref-lang" data-pref-key="lang" style="width: 100%; max-width: 280px;">
+      <input type="text" id="pref-lang-input" data-pref-key="lang" style="display: none;" />
+      <select id="pref-lang" style="width: 100%; max-width: 280px;">
         <option value="auto" id="opt-auto">Auto (System Default)</option>
         <option value="af">Afrikaans</option>
         <option value="ar">العربية</option>
@@ -683,12 +684,45 @@
       }
 
       const select = document.getElementById("pref-lang");
-      if (select) {
-        select.addEventListener("change", updateUI);
+      const input = document.getElementById("pref-lang-input");
+      if (select && input) {
+        function saveLang(val) {
+          input.value = val;
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+          input.dispatchEvent(new Event("change", { bubbles: true }));
+          if (typeof iina !== "undefined" && iina.preferences) {
+            try {
+              iina.preferences.set("lang", val);
+              iina.preferences.sync();
+            } catch (e) {}
+          } else if (window.iina && window.iina.preferences) {
+            try {
+              window.iina.preferences.set("lang", val);
+              window.iina.preferences.sync();
+            } catch (e) {}
+          }
+        }
+
+        select.addEventListener("change", () => {
+          saveLang(select.value);
+          updateUI();
+        });
+
         let lastVal = select.value;
+        let lastInputVal = input.value;
         setInterval(() => {
+          if (input.value && input.value !== lastInputVal) {
+            lastInputVal = input.value;
+            if (select.value !== input.value) {
+              select.value = input.value;
+              lastVal = select.value;
+              updateUI();
+            }
+          }
           if (select.value !== lastVal) {
             lastVal = select.value;
+            saveLang(select.value);
+            lastInputVal = input.value;
             updateUI();
           }
         }, 100);

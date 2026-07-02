@@ -331,6 +331,7 @@ if (iina.global && typeof iina.global.onMessage === "function") {
 }
 
 setInterval(() => {
+  try { preferences.sync(); } catch (e) {}
   const storedLang = preferences.get("lang") || "auto";
   if (storedLang !== currentLang) {
     console.log(`Anime4K: preference lang changed from ${currentLang} to ${storedLang}`);
