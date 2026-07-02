@@ -13,7 +13,7 @@
 [![Languages](https://img.shields.io/badge/Languages-54%20Locales-32CD32?style=for-the-badge&logo=googletranslate&logoColor=white)](https://github.com/yorkyang2333/iina-anime4k/blob/main/src/i18n.js)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue?style=for-the-badge)](https://github.com/yorkyang2333/iina-anime4k/blob/main/LICENSE)
 
-[**English**](README.md) • [**简体中文**](docs/README_zh-CN.md) • [**繁體中文**](docs/README_zh-TW.md) • [**日本語**](docs/README_ja.md) • [**Русский**](docs/README_ru.md)
+[**English**](README.md) • [**简体中文**](docs/README_zh-Hans.md) • [**繁體中文**](docs/README_zh-Hant.md) • [**日本語**](docs/README_ja.md) • [**Русский**](docs/README_ru.md)
 
 </div>
 
