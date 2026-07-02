@@ -1,14 +1,7 @@
 import "../shared.scss";
 import "./sidebar.scss";
 
-const modes = [
-  { id: "A", name: "Mode A", desc: "Optimized for 1080p Anime" },
-  { id: "B", name: "Mode B", desc: "Optimized for 720p Anime" },
-  { id: "C", name: "Mode C", desc: "Optimized for 480p Anime" },
-  { id: "A+A", name: "Mode A+A", desc: "Ultra Quality (1080p)" },
-  { id: "B+B", name: "Mode B+B", desc: "Ultra Quality (720p)" },
-  { id: "C+A", name: "Mode C+A", desc: "Ultra Quality (480p)" }
-];
+import { t, setLocale, getLocale, getModes, localeNames, detectSystemLocale } from "../../src/i18n";
 
 const sidebarMessages = {
   ready: "anime4k:ready",
@@ -25,7 +18,7 @@ const legacySidebarMessages = {
   state: "state"
 };
 
-let currentState = { mode: "off", quality: "fast", autoApply: true };
+let currentState = { mode: "off", quality: "fast", autoApply: true, lang: "auto" };
 let hasState = false;
 let hasModernState = false;
 let readyTimer = null;
@@ -36,6 +29,9 @@ iina.onMessage(sidebarMessages.state, (data) => {
   hasModernState = true;
   activeProtocol = "modern";
   currentState = data;
+  if (data && data.lang) {
+    setLocale(data.lang);
+  }
   hasState = true;
   stopReadyRetry();
   render();
@@ -47,6 +43,9 @@ iina.onMessage(legacySidebarMessages.state, (data) => {
   }
 
   currentState = data;
+  if (data && data.lang) {
+    setLocale(data.lang);
+  }
   hasState = true;
   stopReadyRetry();
   render();
@@ -83,42 +82,56 @@ function render() {
   const app = document.getElementById("app");
   if (!app) return;
   
-  const modeCards = modes.map(m => `
+  const currentModes = getModes();
+  const modeCards = currentModes.map(m => `
     <div class="mode-card ${currentState.mode === m.id ? 'active' : ''}" data-mode="${m.id}">
       <h3>${m.name}</h3>
       <p>${m.desc}</p>
     </div>
   `).join("");
   
+  const sysLang = detectSystemLocale();
+  const sysName = localeNames[sysLang] || sysLang;
+  const langOptions = Object.entries(localeNames).map(([code, name]) => {
+    return `<option value="${code}" ${currentState.lang === code ? 'selected' : ''}>${name}</option>`;
+  }).join("");
+
   const html = `
     <div class="sidebar-container">
-      <h2>Anime4K</h2>
-      <p class="subtitle">Real-time Anime Upscaling</p>
+      <h2>${t("pluginName")}</h2>
+      <p class="subtitle">${t("subtitle")}</p>
       
       <div class="section">
-        <label class="section-title">QUALITY TIER</label>
+        <label class="section-title">${t("qualityTier")}</label>
         <div class="button-group">
-          <button class="${currentState.quality === 'fast' ? 'active' : ''}" data-quality="fast">Fast</button>
-          <button class="${currentState.quality === 'hq' ? 'active' : ''}" data-quality="hq">HQ</button>
+          <button class="${currentState.quality === 'fast' ? 'active' : ''}" data-quality="fast">${t("fast")}</button>
+          <button class="${currentState.quality === 'hq' ? 'active' : ''}" data-quality="hq">${t("hq")}</button>
         </div>
       </div>
       
       <div class="section">
-        <label class="section-title">PRESETS</label>
+        <label class="section-title">${t("presets")}</label>
         <div class="modes-grid">
           ${modeCards}
         </div>
       </div>
       
       <div class="section">
-        <button class="off-button" data-mode="off">Disable Anime4K</button>
+        <button class="off-button" data-mode="off">${t("disable")}</button>
       </div>
       
       <div class="section options-section">
         <label class="toggle-label">
           <input type="checkbox" id="auto-apply-check" ${currentState.autoApply ? 'checked' : ''}>
-          <span>Auto-Apply to New Videos</span>
+          <span>${t("autoApply")}</span>
         </label>
+        <div class="lang-select-wrapper" style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px;">
+          <span style="font-size: 13px; opacity: 0.8;">${t("language")}</span>
+          <select id="lang-select" style="padding: 4px 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.3); color: inherit; border: 1px solid rgba(255, 255, 255, 0.2); outline: none; font-size: 12px;">
+            <option value="auto" ${currentState.lang === 'auto' || !currentState.lang ? 'selected' : ''}>${t("auto")} (${sysName})</option>
+            ${langOptions}
+          </select>
+        </div>
       </div>
       
     </div>
@@ -142,6 +155,20 @@ function render() {
   if (checkbox) {
     checkbox.addEventListener("change", (e) => {
       toggleAutoApply(e.target.checked);
+    });
+  }
+
+  const langSelect = document.getElementById("lang-select");
+  if (langSelect) {
+    langSelect.addEventListener("change", (e) => {
+      const newLang = e.target.value;
+      setLocale(newLang);
+      render();
+      if (activeProtocol === "legacy") {
+        iina.postMessage("setLang", { lang: newLang });
+      } else {
+        iina.postMessage("anime4k:setLang", { lang: newLang });
+      }
     });
   }
 }

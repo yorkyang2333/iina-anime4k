@@ -20,6 +20,7 @@
   "preferenceDefaults": {
     "quality": "fast",
     "mode": "off",
-    "autoApply": true
+    "autoApply": true,
+    "lang": "auto"
   }
 }

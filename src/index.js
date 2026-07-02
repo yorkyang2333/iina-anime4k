@@ -1,5 +1,6 @@
 import { shadersData } from "./shaders-data";
-import { presets, modes } from "./shaders";
+import { presets } from "./shaders";
+import { t, setLocale, getLocale, getModes, localeNames, supportedLocales, detectSystemLocale } from "./i18n";
 
 const { core, event, menu, mpv, console, file, utils, preferences, sidebar, overlay } = iina;
 
@@ -41,11 +42,15 @@ installShaders();
 let currentQuality = preferences.get("quality") || "fast"; // "fast" or "hq"
 let currentMode = preferences.get("mode") || "off"; // "A", "B", "off", etc
 let autoApply = preferences.get("autoApply") !== false;
+let currentLang = preferences.get("lang") || "auto";
+
+setLocale(currentLang);
 
 function saveState() {
   preferences.set("quality", currentQuality);
   preferences.set("mode", currentMode);
   preferences.set("autoApply", autoApply);
+  preferences.set("lang", currentLang);
   preferences.sync();
 }
 
@@ -61,7 +66,8 @@ function sendSidebarState() {
   const state = {
     mode: currentMode,
     quality: currentQuality,
-    autoApply: autoApply
+    autoApply: autoApply,
+    lang: currentLang
   };
 
   console.log(`Anime4K sidebar: post state ${JSON.stringify(state)}`);
@@ -75,7 +81,7 @@ function applyShader(mode, quality = currentQuality) {
 
     if (mode === "off") {
       mpv.command("change-list", ["glsl-shaders", "clr", ""]);
-      showOSD("Anime4K: Off");
+      showOSD(t("osdOff"));
       currentMode = "off";
       saveState();
       updateMenu();
@@ -91,8 +97,8 @@ function applyShader(mode, quality = currentQuality) {
     const paths = shaderList.map(s => utils.resolvePath(`@data/${s}`)).join(":");
     mpv.command("change-list", ["glsl-shaders", "set", paths]);
 
-    const qualityText = quality === "hq" ? "HQ" : "Fast";
-    showOSD(`Anime4K: Mode ${mode} (${qualityText})`);
+    const qualityText = quality === "hq" ? t("hq") : t("fast");
+    showOSD(t("osdMode", { mode: mode, quality: qualityText }));
 
     currentMode = mode;
     currentQuality = quality;
@@ -103,7 +109,7 @@ function applyShader(mode, quality = currentQuality) {
   } catch (error) {
     const message = error && error.message ? error.message : String(error);
     console.error(`Anime4K: Failed to apply shader: ${message}`);
-    showOSD("Anime4K: Failed to apply shader");
+    showOSD(t("osdFailed"));
     sendSidebarState();
     return false;
   }
@@ -137,20 +143,51 @@ function setAutoApply(value) {
 // 3. Menu System
 let presetMenuItems = [];
 
-function updateMenu() {
-  // We recreate or update the menu items
-  // Since IINA plugin API doesn't easily allow dynamic recreation of the whole menu unless we structure it carefully
-  presetMenuItems.forEach(item => {
-    item.selected = (currentMode === item.anime4kMode);
-  });
-  
-  fastQualityMenu.selected = (currentQuality === "fast");
-  hqQualityMenu.selected = (currentQuality === "hq");
-  offMenu.selected = (currentMode === "off");
-  autoApplyMenu.selected = autoApply;
+function setLang(lang) {
+  currentLang = lang;
+  setLocale(lang);
+  saveState();
+  updateMenu();
+  sendSidebarState();
 }
 
-const presetMenus = modes.map((m, i) => {
+function updateMenu() {
+  const localizedModes = getModes();
+  presetMenuItems.forEach(item => {
+    item.selected = (currentMode === item.anime4kMode);
+    if (item.anime4kMode === "off") {
+      item.title = t("disableMenu");
+    } else {
+      const m = localizedModes.find(mod => mod.id === item.anime4kMode);
+      if (m) {
+        item.title = `${m.name} (${m.desc})`;
+      }
+    }
+  });
+  
+  qualityMenu.title = t("qualityTier");
+  fastQualityMenu.title = t("fastMenu");
+  fastQualityMenu.selected = (currentQuality === "fast");
+  hqQualityMenu.title = t("hqMenu");
+  hqQualityMenu.selected = (currentQuality === "hq");
+  
+  presetSubMenu.title = t("presetsMenu");
+  offMenu.selected = (currentMode === "off");
+  autoApplyMenu.title = t("autoApplyMenu");
+  autoApplyMenu.selected = autoApply;
+
+  const sysLang = detectSystemLocale();
+  const sysName = localeNames[sysLang] || sysLang;
+  languageMenu.title = `${t("language")}: ${currentLang === 'auto' ? `${t("auto")} (${sysName})` : (localeNames[currentLang] || currentLang)}`;
+  languageMenuItems.forEach(item => {
+    item.selected = (currentLang === item.langCode);
+    if (item.langCode === "auto") {
+      item.title = `${t("auto")} (${sysName})`;
+    }
+  });
+}
+
+const presetMenus = getModes().map((m, i) => {
   const bindings = ["1", "2", "3", "4", "5", "6"];
   const item = menu.item(`${m.name} (${m.desc})`, () => {
     applyShader(m.id, currentQuality);
@@ -160,26 +197,41 @@ const presetMenus = modes.map((m, i) => {
   return item;
 });
 
-const offMenu = menu.item("Disable Anime4K (Off)", () => applyShader("off"), { keyBinding: "0" });
+const offMenu = menu.item(t("disableMenu"), () => applyShader("off"), { keyBinding: "0" });
 offMenu.anime4kMode = "off";
 presetMenuItems.push(offMenu);
 
-const qualityMenu = menu.item("Quality Tier");
-const fastQualityMenu = menu.item("Fast (M1/M2/Intel)", () => {
+const qualityMenu = menu.item(t("qualityTier"));
+const fastQualityMenu = menu.item(t("fastMenu"), () => {
   setQuality("fast");
 }, { keyBinding: "7" });
-const hqQualityMenu = menu.item("HQ (M1 Pro/Max/Ultra)", () => {
+const hqQualityMenu = menu.item(t("hqMenu"), () => {
   setQuality("hq");
 }, { keyBinding: "8" });
 
 qualityMenu.addSubMenuItem(fastQualityMenu);
 qualityMenu.addSubMenuItem(hqQualityMenu);
 
-const autoApplyMenu = menu.item("Auto-Apply on Video Load", () => {
+const autoApplyMenu = menu.item(t("autoApplyMenu"), () => {
   setAutoApply(!autoApply);
 });
 
-const presetSubMenu = menu.item("Presets");
+const languageMenu = menu.item(t("language"));
+let languageMenuItems = [];
+const menuLocales = ["auto", ...supportedLocales];
+menuLocales.forEach(code => {
+  const sysLang = detectSystemLocale();
+  const sysName = localeNames[sysLang] || sysLang;
+  const label = code === "auto" ? `${t("auto")} (${sysName})` : (localeNames[code] || code);
+  const item = menu.item(label, () => {
+    setLang(code);
+  });
+  item.langCode = code;
+  languageMenuItems.push(item);
+  languageMenu.addSubMenuItem(item);
+});
+
+const presetSubMenu = menu.item(t("presetsMenu"));
 presetSubMenu.addSubMenuItem(offMenu);
 presetSubMenu.addSubMenuItem(menu.separator());
 presetMenus.forEach(m => presetSubMenu.addSubMenuItem(m));
@@ -187,6 +239,7 @@ presetMenus.forEach(m => presetSubMenu.addSubMenuItem(m));
 menu.addItem(presetSubMenu);
 menu.addItem(qualityMenu);
 menu.addItem(autoApplyMenu);
+menu.addItem(languageMenu);
 
 updateMenu();
 
@@ -219,6 +272,20 @@ function registerSidebarMessageHandlers() {
   sidebar.onMessage(sidebarMessages.setAutoApply, (data) => {
     console.log(`Anime4K sidebar: received setAutoApply ${data && data.autoApply}`);
     setAutoApply(data.autoApply);
+  });
+
+  sidebar.onMessage("anime4k:setLang", (data) => {
+    console.log(`Anime4K sidebar: received setLang ${data && data.lang}`);
+    if (data && data.lang) {
+      setLang(data.lang);
+    }
+  });
+
+  sidebar.onMessage("setLang", (data) => {
+    console.log(`Anime4K sidebar: received legacy setLang ${data && data.lang}`);
+    if (data && data.lang) {
+      setLang(data.lang);
+    }
   });
 
   sidebar.onMessage(legacySidebarMessages.ready, () => {
