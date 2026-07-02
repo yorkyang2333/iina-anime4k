@@ -26,8 +26,8 @@
 * 🚀 **Native IINA Workflow**: Control everything via the dedicated Anime4K sidebar tab, macOS top menu bar, and native IINA OSD feedback without leaving playback.
 * 🌐 **Global 54-Language Support**: Fully aligned with official IINA's internationalization roster, featuring native UI translations and dynamic system locale detection.
 * ⚖️ **Two Quality Tiers**:
-  * **Fast**: Lightweight & efficient, optimized for Apple Silicon (M1/M2) and Intel Macs.
-  * **HQ**: Advanced multi-pass shader variants for high-end GPUs (M1 Pro/Max/Ultra and above).
+  * **Fast**: Lightweight & efficient, optimized for standard Apple Silicon chips and Intel Macs.
+  * **HQ**: Advanced multi-pass shader variants for high-end GPUs (M-series Pro/Max/Ultra chips).
 * 🎛️ **Six Preset Chains**: Switch between **Mode A, B, C, A+A, B+B, and C+A** instantly during video playback.
 * 🔄 **Smart Auto-Apply**: Automatically restores your preferred scaling mode and quality tier whenever a new video loads.
 * ⌨️ **Menu Keybindings**: Quick keyboard shortcuts (`1`–`6` for presets, `0` to disable, `7` for Fast tier, and `8` for HQ tier).
