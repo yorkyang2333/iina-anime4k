@@ -5,11 +5,16 @@ on:
     branches:
       - main
       - master
+    tags:
+      - 'v*'
   pull_request:
     branches:
       - main
       - master
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -18,18 +23,18 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
         with:
           submodules: recursive
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: 'latest'
           cache: 'npm'
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: '3.x'
 
@@ -40,8 +45,15 @@ jobs:
         run: npm run pack
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v4
         with:
           name: anime4k-plugin
           path: anime4k.iinaplgz
           if-no-files-found: error
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: anime4k.iinaplgz
+          generate_release_notes: true
