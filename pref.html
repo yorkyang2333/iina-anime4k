@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Anime4K Preferences</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      padding: 16px 20px;
+      margin: 0;
+      font-size: 13px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+      color: var(--text-color, #333);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        color: #eee;
+      }
+      select {
+        background-color: #2c2c2e;
+        color: #fff;
+        border: 1px solid #555;
+      }
+    }
+
+    p {
+      margin: 0;
+    }
+
+    small,
+    .small {
+      font-size: 11px;
+    }
+
+    .secondary {
+      color: rgba(128, 128, 128, 0.85);
+    }
+
+    .pref-section {
+      margin-bottom: 18px;
+    }
+
+    .pref-help {
+      margin-top: 4px;
+      line-height: 1.4;
+    }
+
+    select {
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 13px;
+      outline: none;
+    }
+
+    label {
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="pref-section">
+    <span id="lbl-lang" style="font-weight: 500;">Language:</span>
+    <p class="small secondary pref-help" id="help-lang">
+      Select the display language for Anime4K OSD and side panel.
+    </p>
+    <div style="margin-top: 6px">
+      <select id="pref-lang" data-pref-key="lang" style="width: 100%; max-width: 280px;">
+        <option value="auto" id="opt-auto">Auto (System Default)</option>
+        <option value="af">Afrikaans</option>
+        <option value="ar">العربية</option>
+        <option value="az">Azərbaycan</option>
+        <option value="be">Беларуская</option>
+        <option value="bg">Български</option>
+        <option value="bn">বাংলা</option>
+        <option value="ca">Català</option>
+        <option value="cs">Čeština</option>
+        <option value="da">Dansk</option>
+        <option value="de">Deutsch</option>
+        <option value="el">Ελληνικά</option>
+        <option value="en">English</option>
+        <option value="en-GB">English (UK)</option>
+        <option value="es">Español</option>
+        <option value="eu">Euskara</option>
+        <option value="fa">فارسی</option>
+        <option value="fi">Suomi</option>
+        <option value="fr">Français</option>
+        <option value="he">עברית</option>
+        <option value="hi">हिन्दी</option>
+        <option value="hr">Hrvatski</option>
+        <option value="hu">Magyar</option>
+        <option value="hy">Հայերեն</option>
+        <option value="id">Bahasa Indonesia</option>
+        <option value="is">Íslenska</option>
+        <option value="it">Italiano</option>
+        <option value="ja">日本語</option>
+        <option value="kn">ಕನ್ನಡ</option>
+        <option value="ko">한국어</option>
+        <option value="lv">Latviešu</option>
+        <option value="mk">Македонски</option>
+        <option value="ml">മലയാളം</option>
+        <option value="ne">नेपाली</option>
+        <option value="nl">Nederlands</option>
+        <option value="no">Norsk</option>
+        <option value="pl">Polski</option>
+        <option value="pt">Português</option>
+        <option value="pt-BR">Português (Brasil)</option>
+        <option value="ro">Română</option>
+        <option value="ru">Русский</option>
+        <option value="sk">Slovenčina</option>
+        <option value="sl">Slovenščina</option>
+        <option value="sr">Српски (ћирилица)</option>
+        <option value="sr-Latn">Srpski (latinica)</option>
+        <option value="sv">Svenska</option>
+        <option value="ta">தமிழ்</option>
+        <option value="th">ไทย</option>
+        <option value="tr">Türkçe</option>
+        <option value="ug">ئۇيغۇرچە</option>
+        <option value="uk">Українська</option>
+        <option value="ur">اردو</option>
+        <option value="vi">Tiếng Việt</option>
+        <option value="zh-Hans">简体中文</option>
+        <option value="zh-Hant">繁體中文</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="pref-section">
+    <label>
+      <input type="checkbox" data-type="bool" data-pref-key="autoApply" />
+      <span id="lbl-autoApply" style="font-weight: 500;">Auto-apply Anime4K on video load</span>
+    </label>
+    <p class="small secondary pref-help" id="help-autoApply" style="margin-left: 20px;">
+      Automatically enable upscaling when opening new video files.
+    </p>
+  </div>
+
+  <script>
+    (function () {
+      const translations = {
+            "af": {
+                  "lblLang": "Taal:",
+                  "helpLang": "Taal (Outomaties) — Intydse anime-opskaling",
+                  "lblAutoApply": "Pas outomaties toe by laai van video",
+                  "helpAutoApply": "Pas outomaties toe op nuwe video's",
+                  "autoWord": "Outomaties",
+                  "sysWord": "System Default"
+            },
+            "ar": {
+                  "lblLang": "اللغة:",
+                  "helpLang": "اللغة (تلقائي) — ترقية دقة الأنمي في الوقت الفعلي",
+                  "lblAutoApply": "تطبيق تلقائي عند تحميل الفيديو",
+                  "helpAutoApply": "تطبيق تلقائي على الفيديوهات الجديدة",
+                  "autoWord": "تلقائي",
+                  "sysWord": "الافتراضي للنظام"
+            },
+            "az": {
+                  "lblLang": "Dil:",
+                  "helpLang": "Dil (Avtomatik) — Real vaxt rejimində anime keyfiyyətinin artırılması",
+                  "lblAutoApply": "Video yükləndikdə avtomatik tətbiq et",
+                  "helpAutoApply": "Yeni videolara avtomatik tətbiq et",
+                  "autoWord": "Avtomatik",
+                  "sysWord": "System Default"
+            },
+            "be": {
+                  "lblLang": "Мова:",
+                  "helpLang": "Мова (Аўтаматычна) — Паляпшэнне якасці аніме ў рэальным часе",
+                  "lblAutoApply": "Аўтаматычна прымяняць пры загрузцы відэа",
+                  "helpAutoApply": "Аўтаматычна прымяняць да новых відэа",
+                  "autoWord": "Аўтаматычна",
+                  "sysWord": "System Default"
+            },
+            "bg": {
+                  "lblLang": "Език:",
+                  "helpLang": "Език (Автоматично) — Подобряване на качеството на аниме в реално време",
+                  "lblAutoApply": "Автоматично прилагане при зареждане на видео",
+                  "helpAutoApply": "Автоматично прилагане за нови видеа",
+                  "autoWord": "Автоматично",
+                  "sysWord": "System Default"
+            },
+            "bn": {
+                  "lblLang": "ভাষা:",
+                  "helpLang": "ভাষা (স্বয়ংক্রিয়) — রিয়েল-টাইম অ্যানিমে আপস্কেলিং",
+                  "lblAutoApply": "ভিডিও লোড হলে স্বয়ংক্রিয়ভাবে প্রয়োগ করুন",
+                  "helpAutoApply": "নতুন ভিডিওতে স্বয়ংক্রিয়ভাবে প্রয়োগ করুন",
+                  "autoWord": "স্বয়ংক্রিয়",
+                  "sysWord": "System Default"
+            },
+            "ca": {
+                  "lblLang": "Idioma:",
+                  "helpLang": "Idioma (Automàtic) — Escalat d'anime en temps real",
+                  "lblAutoApply": "Aplica automàticament en carregar el vídeo",
+                  "helpAutoApply": "Aplica automàticament als vídeos nous",
+                  "autoWord": "Automàtic",
+                  "sysWord": "System Default"
+            },
+            "cs": {
+                  "lblLang": "Jazyk:",
+                  "helpLang": "Jazyk (Automaticky) — Vylepšení rozlišení anime v reálném čase",
+                  "lblAutoApply": "Automaticky použít při načtení videa",
+                  "helpAutoApply": "Automaticky použít na nová videa",
+                  "autoWord": "Automaticky",
+                  "sysWord": "System Default"
+            },
+            "da": {
+                  "lblLang": "Sprog:",
+                  "helpLang": "Sprog (Automatisk) — Realtids anime-opskalering",
+                  "lblAutoApply": "Anvend automatisk ved indlæsning af video",
+                  "helpAutoApply": "Anvend automatisk på nye videoer",
+                  "autoWord": "Automatisk",
+                  "sysWord": "System Default"
+            },
+            "de": {
+                  "lblLang": "Sprache:",
+                  "helpLang": "Wählen Sie die Anzeigesprache für das Anime4K-OSD und das Seitenpanel.",
+                  "lblAutoApply": "Automatisch beim Laden von Videos anwenden",
+                  "helpAutoApply": "Hochskalierung beim Öffnen neuer Videodateien automatisch aktivieren.",
+                  "autoWord": "Automatisch",
+                  "sysWord": "Systemstandard"
+            },
+            "el": {
+                  "lblLang": "Γλώσσα:",
+                  "helpLang": "Γλώσσα (Αυτόματο) — Αναβάθμιση ανάλυσης anime σε πραγματικό χρόνο",
+                  "lblAutoApply": "Αυτόματη εφαρμογή κατά τη φόρτωση βίντεο",
+                  "helpAutoApply": "Αυτόματη εφαρμογή σε νέα βίντεο",
+                  "autoWord": "Αυτόματο",
+                  "sysWord": "System Default"
+            },
+            "en": {
+                  "lblLang": "Language:",
+                  "helpLang": "Select the display language for Anime4K OSD and side panel.",
+                  "lblAutoApply": "Auto-Apply on Video Load",
+                  "helpAutoApply": "Automatically enable upscaling when opening new video files.",
+                  "autoWord": "Auto",
+                  "sysWord": "System Default"
+            },
+            "en-GB": {
+                  "lblLang": "Language:",
+                  "helpLang": "Language (Auto) — Real-time Anime Upscaling",
+                  "lblAutoApply": "Auto-Apply on Video Load",
+                  "helpAutoApply": "Auto-Apply to New Videos",
+                  "autoWord": "Auto",
+                  "sysWord": "System Default"
+            },
+            "es": {
+                  "lblLang": "Idioma:",
+                  "helpLang": "Seleccione el idioma de visualización para el OSD y el panel lateral de Anime4K.",
+                  "lblAutoApply": "Aplicar automáticamente al cargar vídeo",
+                  "helpAutoApply": "Habilitar automáticamente el escalado al abrir nuevos archivos de vídeo.",
+                  "autoWord": "Automático",
+                  "sysWord": "Predeterminado del sistema"
+            },
+            "eu": {
+                  "lblLang": "Hizkuntza:",
+                  "helpLang": "Hizkuntza (Automatikoa) — Denbora errealeko anime eskalatzea",
+                  "lblAutoApply": "Aplikatu automatikoki bideoa kargatzean",
+                  "helpAutoApply": "Aplikatu automatikoki bideo berrietan",
+                  "autoWord": "Automatikoa",
+                  "sysWord": "System Default"
+            },
+            "fa": {
+                  "lblLang": "زبان:",
+                  "helpLang": "زبان (خودکار) — ارتقای کیفیت انیمه در زمان واقعی",
+                  "lblAutoApply": "اعمال خودکار هنگام بارگذاری ویدیو",
+                  "helpAutoApply": "اعمال خودکار روی ویدیوهای جدید",
+                  "autoWord": "خودکار",
+                  "sysWord": "System Default"
+            },
+            "fi": {
+                  "lblLang": "Kieli:",
+                  "helpLang": "Kieli (Automaattinen) — Reaaliaikainen animen skaalaus",
+                  "lblAutoApply": "Käytä automaattisesti videoa ladattaessa",
+                  "helpAutoApply": "Käytä automaattisesti uusiin videoihin",
+                  "autoWord": "Automaattinen",
+                  "sysWord": "System Default"
+            },
+            "fr": {
+                  "lblLang": "Langue:",
+                  "helpLang": "Sélectionnez la langue d'affichage pour l'OSD et le panneau latéral d'Anime4K.",
+                  "lblAutoApply": "Appliquer automatiquement au chargement de la vidéo",
+                  "helpAutoApply": "Activer automatiquement la mise à l'échelle lors de l'ouverture de nouvelles vidéos.",
+                  "autoWord": "Automatique",
+                  "sysWord": "Par défaut du système"
+            },
+            "he": {
+                  "lblLang": "שפה:",
+                  "helpLang": "שפה (אוטומטי) — שיפור רזולוציית אנימה בזמן אמת",
+                  "lblAutoApply": "החל באופן אוטומטי בעת טעינת סרטון",
+                  "helpAutoApply": "החל באופן אוטומטי על סרטונים חדשים",
+                  "autoWord": "אוטומטי",
+                  "sysWord": "System Default"
+            },
+            "hi": {
+                  "lblLang": "भाषा:",
+                  "helpLang": "भाषा (स्वतः) — रीयल-टाइम एनीमे अपस्केलिंग",
+                  "lblAutoApply": "वीडियो लोड होने पर स्वचालित रूप से लागू करें",
+                  "helpAutoApply": "नए वीडियो पर स्वचालित रूप से लागू करें",
+                  "autoWord": "स्वतः",
+                  "sysWord": "System Default"
+            },
+            "hr": {
+                  "lblLang": "Jezik:",
+                  "helpLang": "Jezik (Automatski) — Poboljšanje kvalitete animea u stvarnom vremenu",
+                  "lblAutoApply": "Automatski primijeni pri učitavanju videa",
+                  "helpAutoApply": "Automatski primijeni na nove videozapise",
+                  "autoWord": "Automatski",
+                  "sysWord": "System Default"
+            },
+            "hu": {
+                  "lblLang": "Nyelv:",
+                  "helpLang": "Nyelv (Automatikus) — Valós idejű anime felbontásnövelés",
+                  "lblAutoApply": "Automatikus alkalmazás videó betöltésekor",
+                  "helpAutoApply": "Automatikus alkalmazás új videókra",
+                  "autoWord": "Automatikus",
+                  "sysWord": "System Default"
+            },
+            "hy": {
+                  "lblLang": "Լեզու:",
+                  "helpLang": "Լեզու (Ավտոմատ) — Անիմեի որակի բարձրացում իրական ժամանակում",
+                  "lblAutoApply": "Ավտոմատ կիրառել տեսանյութը բեռնելիս",
+                  "helpAutoApply": "Ավտոմատ կիրառել նոր տեսանյութերի վրա",
+                  "autoWord": "Ավտոմատ",
+                  "sysWord": "System Default"
+            },
+            "id": {
+                  "lblLang": "Bahasa:",
+                  "helpLang": "Bahasa (Otomatis) — Peningkat Resolusi Anime Waktu Nyata",
+                  "lblAutoApply": "Terapkan Otomatis Saat Video Dimuat",
+                  "helpAutoApply": "Terapkan Otomatis ke Video Baru",
+                  "autoWord": "Otomatis",
+                  "sysWord": "Bawaan Sistem"
+            },
+            "is": {
+                  "lblLang": "Tungumál:",
+                  "helpLang": "Tungumál (Sjálfvirkt) — Uppskölun anime í rauntíma",
+                  "lblAutoApply": "Nota sjálfkrafa við hleðslu myndbrots",
+                  "helpAutoApply": "Nota sjálfkrafa á ný myndbrot",
+                  "autoWord": "Sjálfvirkt",
+                  "sysWord": "System Default"
+            },
+            "it": {
+                  "lblLang": "Lingua:",
+                  "helpLang": "Lingua (Automatico) — Miglioramento risoluzione anime in tempo reale",
+                  "lblAutoApply": "Applica automaticamente al caricamento",
+                  "helpAutoApply": "Applica automaticamente ai nuovi video",
+                  "autoWord": "Automatico",
+                  "sysWord": "Predefinito di sistema"
+            },
+            "ja": {
+                  "lblLang": "言語:",
+                  "helpLang": "Anime4KのOSDおよびサイドパネルの表示言語を選択します。",
+                  "lblAutoApply": "動画読み込み時に自動適用",
+                  "helpAutoApply": "新しい動画ファイルを再生する際に自動的に高画質化を有効にします。",
+                  "autoWord": "自動",
+                  "sysWord": "システムデフォルト"
+            },
+            "kn": {
+                  "lblLang": "ಭಾಷೆ:",
+                  "helpLang": "ಭಾಷೆ (ಸ್ವಯಂಚಾಲಿತ) — ನೈಜ-ಸಮಯದ ಅನಿಮೆ ಅಪ್‌ಸ್ಕೇಲಿಂಗ್",
+                  "lblAutoApply": "ವೀಡಿಯೊ ಲೋಡ್ ಆದಾಗ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನ್ವಯಿಸಿ",
+                  "helpAutoApply": "ಹೊಸ ವೀಡಿಯೊಗಳಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನ್ವಯಿಸಿ",
+                  "autoWord": "ಸ್ವಯಂಚಾಲಿತ",
+                  "sysWord": "System Default"
+            },
+            "ko": {
+                  "lblLang": "언어:",
+                  "helpLang": "Anime4K OSD 및 사이드 패널의 표시 언어를 선택합니다.",
+                  "lblAutoApply": "동영상 불러올 때 자동 적용",
+                  "helpAutoApply": "새 동영상을 재생할 때 자동으로 업스케일링을 활성화합니다.",
+                  "autoWord": "자동",
+                  "sysWord": "시스템 기본값"
+            },
+            "lv": {
+                  "lblLang": "Valoda:",
+                  "helpLang": "Valoda (Automātiski) — Reāllaika anime mēroga palielināšana",
+                  "lblAutoApply": "Automātiski piemērot, ielādējot video",
+                  "helpAutoApply": "Automātiski piemērot jauniem videoklipiem",
+                  "autoWord": "Automātiski",
+                  "sysWord": "System Default"
+            },
+            "mk": {
+                  "lblLang": "Јазик:",
+                  "helpLang": "Јазик (Автоматски) — Подобрување на квалитетот на аниме во реално време",
+                  "lblAutoApply": "Автоматски примени при вчитување видео",
+                  "helpAutoApply": "Автоматски примени на нови видеа",
+                  "autoWord": "Автоматски",
+                  "sysWord": "System Default"
+            },
+            "ml": {
+                  "lblLang": "ഭാഷ:",
+                  "helpLang": "ഭാഷ (യാന്ത്രികം) — തത്സമയ ആനിമേഷൻ അപ്‌സ്‌കേലിംഗ്",
+                  "lblAutoApply": "വീഡിയോ ലോഡ് ചെയ്യുമ്പോൾ യാന്ത്രികമായി പ്രയോഗിക്കുക",
+                  "helpAutoApply": "പുതിയ വീഡിയോകളിൽ യാന്ത്രികമായി പ്രയോഗിക്കുക",
+                  "autoWord": "യാന്ത്രികം",
+                  "sysWord": "System Default"
+            },
+            "ne": {
+                  "lblLang": "भाषा:",
+                  "helpLang": "भाषा (स्वतः) — रियल-टाइम एनिमे अपस्केलिङ",
+                  "lblAutoApply": "भिडियो लोड हुँदा स्वतः लागू गर्नुहोस्",
+                  "helpAutoApply": "नयाँ भिडियोहरूमा स्वतः लागू गर्नुहोस्",
+                  "autoWord": "स्वतः",
+                  "sysWord": "System Default"
+            },
+            "nl": {
+                  "lblLang": "Taal:",
+                  "helpLang": "Taal (Automatisch) — Real-time anime opschalen",
+                  "lblAutoApply": "Automatisch toepassen bij laden van video",
+                  "helpAutoApply": "Automatisch toepassen op nieuwe video's",
+                  "autoWord": "Automatisch",
+                  "sysWord": "Systeemstandaard"
+            },
+            "no": {
+                  "lblLang": "Språk:",
+                  "helpLang": "Språk (Automatisk) — Sanntids anime-oppskalering",
+                  "lblAutoApply": "Bruk automatisk ved innlasting av video",
+                  "helpAutoApply": "Bruk automatisk på nye videoer",
+                  "autoWord": "Automatisk",
+                  "sysWord": "System Default"
+            },
+            "pl": {
+                  "lblLang": "Język:",
+                  "helpLang": "Język (Automatycznie) — Skalowanie anime w czasie rzeczywistym",
+                  "lblAutoApply": "Automatycznie stosuj przy ładowaniu wideo",
+                  "helpAutoApply": "Automatycznie stosuj do nowych wideo",
+                  "autoWord": "Automatycznie",
+                  "sysWord": "Domyślny systemowy"
+            },
+            "pt": {
+                  "lblLang": "Idioma:",
+                  "helpLang": "Idioma (Automático) — Melhoramento de anime em tempo real",
+                  "lblAutoApply": "Aplicar automaticamente ao carregar vídeo",
+                  "helpAutoApply": "Aplicar automaticamente a novos vídeos",
+                  "autoWord": "Automático",
+                  "sysWord": "Padrão do sistema"
+            },
+            "pt-BR": {
+                  "lblLang": "Idioma:",
+                  "helpLang": "Idioma (Automático) — Aprimoramento de anime em tempo real",
+                  "lblAutoApply": "Aplicar automaticamente ao carregar vídeo",
+                  "helpAutoApply": "Aplicar automaticamente a novos vídeos",
+                  "autoWord": "Automático",
+                  "sysWord": "Padrão do sistema"
+            },
+            "ro": {
+                  "lblLang": "Limbă:",
+                  "helpLang": "Limbă (Automat) — Îmbunătățire anime în timp real",
+                  "lblAutoApply": "Aplică automat la încărcarea videoclipului",
+                  "helpAutoApply": "Aplică automat pentru videoclipuri noi",
+                  "autoWord": "Automat",
+                  "sysWord": "System Default"
+            },
+            "ru": {
+                  "lblLang": "Язык:",
+                  "helpLang": "Выберите язык интерфейса для OSD и боковой панели Anime4K.",
+                  "lblAutoApply": "Автоматически применять при загрузке видео",
+                  "helpAutoApply": "Автоматически включать масштабирование при открытии новых видеофайлов.",
+                  "autoWord": "Автоматически",
+                  "sysWord": "По умолчанию"
+            },
+            "sk": {
+                  "lblLang": "Jazyk:",
+                  "helpLang": "Jazyk (Automaticky) — Zvýšenie rozlíšenia anime v reálnom čase",
+                  "lblAutoApply": "Automaticky použiť pri načítaní videa",
+                  "helpAutoApply": "Automaticky použiť na nové videá",
+                  "autoWord": "Automaticky",
+                  "sysWord": "System Default"
+            },
+            "sl": {
+                  "lblLang": "Jezik:",
+                  "helpLang": "Jezik (Samodejno) — Izboljšanje ločljivosti animejev v realnem času",
+                  "lblAutoApply": "Samodejno uporabi pri nalaganju videa",
+                  "helpAutoApply": "Samodejno uporabi za nove videoposnetke",
+                  "autoWord": "Samodejno",
+                  "sysWord": "System Default"
+            },
+            "sr": {
+                  "lblLang": "Језик:",
+                  "helpLang": "Језик (Аутоматски) — Побољшање квалитета анимеа у реалном времену",
+                  "lblAutoApply": "Аутоматски примени при учитавању видеа",
+                  "helpAutoApply": "Аутоматски примени на нове видео снимке",
+                  "autoWord": "Аутоматски",
+                  "sysWord": "System Default"
+            },
+            "sr-Latn": {
+                  "lblLang": "Jezik:",
+                  "helpLang": "Jezik (Automatski) — Poboljšanje kvaliteta animea u realnom vremenu",
+                  "lblAutoApply": "Automatski primeni pri učitavanju videa",
+                  "helpAutoApply": "Automatski primeni na nove video snimke",
+                  "autoWord": "Automatski",
+                  "sysWord": "System Default"
+            },
+            "sv": {
+                  "lblLang": "Språk:",
+                  "helpLang": "Språk (Automatisk) — Realtids anime-uppskalning",
+                  "lblAutoApply": "Tillämpa automatiskt vid laddning av video",
+                  "helpAutoApply": "Tillämpa automatiskt på nya videor",
+                  "autoWord": "Automatisk",
+                  "sysWord": "System Default"
+            },
+            "ta": {
+                  "lblLang": "மொழி:",
+                  "helpLang": "மொழி (தானியங்கி) — நிகழ்நேர அனிமே மேம்பாடு",
+                  "lblAutoApply": "வீடியோ ஏற்றப்படும்போது தானாகப் பயன்படுத்து",
+                  "helpAutoApply": "புதிய வீடியோக்களுக்கு தானாகப் பயன்படுத்து",
+                  "autoWord": "தானியங்கி",
+                  "sysWord": "System Default"
+            },
+            "th": {
+                  "lblLang": "ภาษา:",
+                  "helpLang": "ภาษา (อัตโนมัติ) — การอัปสเกลอนิเมะแบบเรียลไทม์",
+                  "lblAutoApply": "ใช้กับวิดีโออัตโนมัติเมื่อโหลด",
+                  "helpAutoApply": "ใช้กับวิดีโอใหม่อัตโนมัติ",
+                  "autoWord": "อัตโนมัติ",
+                  "sysWord": "ค่าเริ่มต้นระบบ"
+            },
+            "tr": {
+                  "lblLang": "Dil:",
+                  "helpLang": "Dil (Otomatik) — Gerçek Zamanlı Anime Çözünürlük Yükseltme",
+                  "lblAutoApply": "Video Yüklendiğinde Otomatik Uygula",
+                  "helpAutoApply": "Yeni Videolara Otomatik Uygula",
+                  "autoWord": "Otomatik",
+                  "sysWord": "Sistem Varsayılanı"
+            },
+            "ug": {
+                  "lblLang": "تىل:",
+                  "helpLang": "تىل (ئاپتوماتىك) — رېئال ۋاقىتلىق ئانىمې ئېنىقلىقىنى ئاشۇرۇش",
+                  "lblAutoApply": "سىن يۈكلەنگەندە ئاپتوماتىك قوللىنىش",
+                  "helpAutoApply": "يېڭى سىنلارغا ئاپتوماتىك قوللىنىش",
+                  "autoWord": "ئاپتوماتىك",
+                  "sysWord": "System Default"
+            },
+            "uk": {
+                  "lblLang": "Мова:",
+                  "helpLang": "Мова (Автоматично) — Покращення якості аніме в реальному часі",
+                  "lblAutoApply": "Автоматично застосовувати при завантаженні відео",
+                  "helpAutoApply": "Автоматично застосовувати до нових відео",
+                  "autoWord": "Автоматично",
+                  "sysWord": "За замовчуванням"
+            },
+            "ur": {
+                  "lblLang": "زبان:",
+                  "helpLang": "زبان (خودکار) — ریئل ٹائم اینیمے اپ سکیلنگ",
+                  "lblAutoApply": "ویڈیو لوڈ ہونے پر خودکار لاگو کریں",
+                  "helpAutoApply": "نئی ویڈیوز پر خودکار لاگو کریں",
+                  "autoWord": "خودکار",
+                  "sysWord": "System Default"
+            },
+            "vi": {
+                  "lblLang": "Ngôn ngữ:",
+                  "helpLang": "Ngôn ngữ (Tự động) — Nâng cấp Anime theo thời gian thực",
+                  "lblAutoApply": "Tự động áp dụng khi tải video",
+                  "helpAutoApply": "Tự động áp dụng cho video mới",
+                  "autoWord": "Tự động",
+                  "sysWord": "Mặc định hệ thống"
+            },
+            "zh-Hans": {
+                  "lblLang": "语言:",
+                  "helpLang": "选择 Anime4K 屏幕提示 (OSD) 与控制台的显示语言。",
+                  "lblAutoApply": "加载视频时自动应用",
+                  "helpAutoApply": "在播放新视频时自动加载上次的优化模式。",
+                  "autoWord": "自动",
+                  "sysWord": "系统默认"
+            },
+            "zh-Hant": {
+                  "lblLang": "語言:",
+                  "helpLang": "選擇 Anime4K 螢幕提示 (OSD) 與控制台的顯示語言。",
+                  "lblAutoApply": "載入影片時自動套用",
+                  "helpAutoApply": "在播放新影片時自動載入上次的優化模式。",
+                  "autoWord": "自動",
+                  "sysWord": "系統預設"
+            }
+      };
+      const localeNames = {
+            "af": "Afrikaans",
+            "ar": "العربية",
+            "az": "Azərbaycan",
+            "be": "Беларуская",
+            "bg": "Български",
+            "bn": "বাংলা",
+            "ca": "Català",
+            "cs": "Čeština",
+            "da": "Dansk",
+            "de": "Deutsch",
+            "el": "Ελληνικά",
+            "en": "English",
+            "en-GB": "English (UK)",
+            "es": "Español",
+            "eu": "Euskara",
+            "fa": "فارسی",
+            "fi": "Suomi",
+            "fr": "Français",
+            "he": "עברית",
+            "hi": "हिन्दी",
+            "hr": "Hrvatski",
+            "hu": "Magyar",
+            "hy": "Հայերեն",
+            "id": "Bahasa Indonesia",
+            "is": "Íslenska",
+            "it": "Italiano",
+            "ja": "日本語",
+            "kn": "ಕನ್ನಡ",
+            "ko": "한국어",
+            "lv": "Latviešu",
+            "mk": "Македонски",
+            "ml": "മലയാളം",
+            "ne": "नेपाली",
+            "nl": "Nederlands",
+            "no": "Norsk",
+            "pl": "Polski",
+            "pt": "Português",
+            "pt-BR": "Português (Brasil)",
+            "ro": "Română",
+            "ru": "Русский",
+            "sk": "Slovenčina",
+            "sl": "Slovenščina",
+            "sr": "Српски (ћирилица)",
+            "sr-Latn": "Srpski (latinica)",
+            "sv": "Svenska",
+            "ta": "தமிழ்",
+            "th": "ไทย",
+            "tr": "Türkçe",
+            "ug": "ئۇيغۇرچە",
+            "uk": "Українська",
+            "ur": "اردو",
+            "vi": "Tiếng Việt",
+            "zh-Hans": "简体中文",
+            "zh-Hant": "繁體中文"
+      };
+
+      function resolveLang(code) {
+        if (!code || code === "auto") {
+          let sys = (navigator.language || "en").toLowerCase();
+          if (sys.includes("zh")) {
+            return (sys.includes("hant") || sys.includes("tw") || sys.includes("hk")) ? "zh-Hant" : "zh-Hans";
+          }
+          if (sys.includes("pt")) {
+            return sys.includes("br") ? "pt-BR" : "pt";
+          }
+          if (sys.includes("en")) {
+            return (sys === "en-gb" || sys === "en-au" || sys === "en-nz") ? "en-GB" : "en";
+          }
+          const base = sys.split("-")[0];
+          return translations[base] ? base : "en";
+        }
+        if (translations[code]) return code;
+        const short = code.split("-")[0];
+        return translations[short] ? short : "en";
+      }
+
+      function updateUI() {
+        const select = document.getElementById("pref-lang");
+        if (!select) return;
+        const code = resolveLang(select.value);
+        const t = translations[code] || translations["en"];
+
+        const el = (id, text) => {
+          const node = document.getElementById(id);
+          if (node && text) node.textContent = text;
+        };
+
+        el("lbl-lang", t.lblLang);
+        el("help-lang", t.helpLang);
+        el("lbl-autoApply", t.lblAutoApply);
+        el("help-autoApply", t.helpAutoApply);
+
+        const sysCode = resolveLang("auto");
+        const sysName = localeNames[sysCode] || sysCode;
+        const autoText = `${t.autoWord} (${t.sysWord}: ${sysName})`;
+        el("opt-auto", autoText);
+      }
+
+      const select = document.getElementById("pref-lang");
+      if (select) {
+        select.addEventListener("change", updateUI);
+        let lastVal = select.value;
+        setInterval(() => {
+          if (select.value !== lastVal) {
+            lastVal = select.value;
+            updateUI();
+          }
+        }, 100);
+      }
+      updateUI();
+    })();
+  </script>
+</body>
+
+</html>

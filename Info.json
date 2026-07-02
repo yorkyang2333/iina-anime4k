@@ -9,6 +9,7 @@
   },
   "entry": "dist/index.js",
   "globalEntry": "dist/global.js",
+  "preferencesPage": "pref.html",
   "permissions": [
     "show-osd",
     "video-overlay",

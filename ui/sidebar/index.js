@@ -1,7 +1,7 @@
 import "../shared.scss";
 import "./sidebar.scss";
 
-import { t, setLocale, getLocale, getModes, localeNames, detectSystemLocale } from "../../src/i18n";
+import { t, setLocale, getLocale, getModes } from "../../src/i18n";
 
 const sidebarMessages = {
   ready: "anime4k:ready",
@@ -89,12 +89,6 @@ function render() {
       <p>${m.desc}</p>
     </div>
   `).join("");
-  
-  const sysLang = detectSystemLocale();
-  const sysName = localeNames[sysLang] || sysLang;
-  const langOptions = Object.entries(localeNames).map(([code, name]) => {
-    return `<option value="${code}" ${currentState.lang === code ? 'selected' : ''}>${name}</option>`;
-  }).join("");
 
   const html = `
     <div class="sidebar-container">
@@ -125,13 +119,6 @@ function render() {
           <input type="checkbox" id="auto-apply-check" ${currentState.autoApply ? 'checked' : ''}>
           <span>${t("autoApply")}</span>
         </label>
-        <div class="lang-select-wrapper" style="margin-top: 14px; display: flex; align-items: center; justify-content: space-between; border-top: 1px solid rgba(255, 255, 255, 0.08); padding-top: 12px;">
-          <span style="font-size: 13px; opacity: 0.8;">${t("language")}</span>
-          <select id="lang-select" style="padding: 4px 8px; border-radius: 4px; background: rgba(0, 0, 0, 0.3); color: inherit; border: 1px solid rgba(255, 255, 255, 0.2); outline: none; font-size: 12px;">
-            <option value="auto" ${currentState.lang === 'auto' || !currentState.lang ? 'selected' : ''}>${t("auto")} (${sysName})</option>
-            ${langOptions}
-          </select>
-        </div>
       </div>
       
     </div>
@@ -155,20 +142,6 @@ function render() {
   if (checkbox) {
     checkbox.addEventListener("change", (e) => {
       toggleAutoApply(e.target.checked);
-    });
-  }
-
-  const langSelect = document.getElementById("lang-select");
-  if (langSelect) {
-    langSelect.addEventListener("change", (e) => {
-      const newLang = e.target.value;
-      setLocale(newLang);
-      render();
-      if (activeProtocol === "legacy") {
-        iina.postMessage("setLang", { lang: newLang });
-      } else {
-        iina.postMessage("anime4k:setLang", { lang: newLang });
-      }
     });
   }
 }

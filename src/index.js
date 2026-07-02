@@ -1,6 +1,6 @@
 import { shadersData } from "./shaders-data";
 import { presets } from "./shaders";
-import { t, setLocale, getLocale, getModes, localeNames, supportedLocales, detectSystemLocale } from "./i18n";
+import { t, setLocale, getLocale, getModes } from "./i18n";
 
 const { core, event, menu, mpv, console, file, utils, preferences, sidebar, overlay } = iina;
 
@@ -144,6 +144,7 @@ function setAutoApply(value) {
 let presetMenuItems = [];
 
 function setLang(lang) {
+  if (currentLang === lang && getLocale() === lang) return;
   currentLang = lang;
   setLocale(lang);
   saveState();
@@ -175,16 +176,6 @@ function updateMenu() {
   offMenu.selected = (currentMode === "off");
   autoApplyMenu.title = t("autoApplyMenu");
   autoApplyMenu.selected = autoApply;
-
-  const sysLang = detectSystemLocale();
-  const sysName = localeNames[sysLang] || sysLang;
-  languageMenu.title = `${t("language")}: ${currentLang === 'auto' ? `${t("auto")} (${sysName})` : (localeNames[currentLang] || currentLang)}`;
-  languageMenuItems.forEach(item => {
-    item.selected = (currentLang === item.langCode);
-    if (item.langCode === "auto") {
-      item.title = `${t("auto")} (${sysName})`;
-    }
-  });
 }
 
 const presetMenus = getModes().map((m, i) => {
@@ -216,21 +207,6 @@ const autoApplyMenu = menu.item(t("autoApplyMenu"), () => {
   setAutoApply(!autoApply);
 });
 
-const languageMenu = menu.item(t("language"));
-let languageMenuItems = [];
-const menuLocales = ["auto", ...supportedLocales];
-menuLocales.forEach(code => {
-  const sysLang = detectSystemLocale();
-  const sysName = localeNames[sysLang] || sysLang;
-  const label = code === "auto" ? `${t("auto")} (${sysName})` : (localeNames[code] || code);
-  const item = menu.item(label, () => {
-    setLang(code);
-  });
-  item.langCode = code;
-  languageMenuItems.push(item);
-  languageMenu.addSubMenuItem(item);
-});
-
 const presetSubMenu = menu.item(t("presetsMenu"));
 presetSubMenu.addSubMenuItem(offMenu);
 presetSubMenu.addSubMenuItem(menu.separator());
@@ -239,7 +215,6 @@ presetMenus.forEach(m => presetSubMenu.addSubMenuItem(m));
 menu.addItem(presetSubMenu);
 menu.addItem(qualityMenu);
 menu.addItem(autoApplyMenu);
-menu.addItem(languageMenu);
 
 updateMenu();
 
@@ -338,5 +313,29 @@ event.on("iina.file-loaded", () => {
     sendSidebarState();
   }
 });
+
+// 6. Global preferences synchronization
+if (iina.global && typeof iina.global.onMessage === "function") {
+  iina.global.onMessage("anime4k:setLang", (data) => {
+    console.log(`Anime4K global: received setLang ${data && data.lang}`);
+    if (data && data.lang) {
+      setLang(data.lang);
+    }
+  });
+  iina.global.onMessage("setLang", (data) => {
+    console.log(`Anime4K global: received legacy setLang ${data && data.lang}`);
+    if (data && data.lang) {
+      setLang(data.lang);
+    }
+  });
+}
+
+setInterval(() => {
+  const storedLang = preferences.get("lang") || "auto";
+  if (storedLang !== currentLang) {
+    console.log(`Anime4K: preference lang changed from ${currentLang} to ${storedLang}`);
+    setLang(storedLang);
+  }
+}, 1000);
 
 console.log("Anime4K Plugin initialized.");
