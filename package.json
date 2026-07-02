@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "devDependencies": {
     "@parcel/transformer-sass": "^2.8.3",
     "iina-plugin-definition": "^0.0.7",
