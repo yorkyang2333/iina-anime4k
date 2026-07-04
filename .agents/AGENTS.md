@@ -67,6 +67,20 @@ When instructed to prepare or cut a new release, follow this comprehensive, step
    git push origin vX.Y.Z
    ```
 2. **Automated CI/CD Behavior**: Pushing a tag matching `v*` automatically triggers the GitHub Actions workflow (`.github/workflows/build.yml`). The CI runner checks out submodules recursively, executes `npm ci` and `npm run pack`, creates the official GitHub Release with release notes, and uploads the compiled binary asset `anime4k.iinaplgz` for end users.
+3. **Mandatory GitHub Release Notes Formatting**: After pushing the tag or when editing the release notes via GitHub CLI (`gh release edit vX.Y.Z --notes-file <file>`), the release notes MUST be written in clean, user-facing, professional Markdown without exposing internal development chatter or gitignore debugging. Always format release notes using the following structured template:
+   ```markdown
+   ## 🌸 What's New in vX.Y.Z
+
+   ### ✨ New Features & Improvements
+   * **Feature Name**: Professional, user-centric description of the new feature or enhancement.
+   * **Another Feature**: Description of changes.
+
+   ### 🐛 Bug Fixes & Optimizations
+   * **Fix Name**: Professional explanation of the bug fix or stability improvement.
+
+   ---
+   **Full Changelog**: https://github.com/yorkyang2333/iina-anime4k/compare/vPREV...vX.Y.Z
+   ```
 
 ---
 
