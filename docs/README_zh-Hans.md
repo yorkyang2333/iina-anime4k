@@ -70,13 +70,17 @@ npm run pack
 ```
 执行完毕后，仓库根目录下即可生成打包好的最新插件包 `anime4k.iinaplgz`。
 
-## 👨‍💻 开发架构说明
+## 🤝 参与开发与贡献 (Contributing)
 
+我们非常欢迎社区开发者提交 Pull Request 与共建！在参与开发前，请务必阅读我们的 [**开发者贡献指南 (CONTRIBUTING.md)**](../CONTRIBUTING.md)，里面详细说明了本地开发环境配置、版本号自增规范 (`ghVersion`) 以及 IINA 的自动化发版架构与打包逻辑。
+
+### 核心项目结构
 * `src/index.js` — 插件核心运行时（着色器自动配置、状态持久化、菜单同步、OSD 消息与自动加载逻辑）。
 * `src/shaders.js` — Fast 与 HQ 两档着色器链路与参数映射。
 * `src/i18n.js` — 全量 54 种语言本地化词典与系统语种检测引擎。
 * `ui/sidebar/` — 侧边栏 Web UI 的前端交互与样式定义。
 * `build-shaders.py` — 预编译脚本，读取并解析 `Anime4K/glsl/**/*.glsl`，捆绑生成 `src/shaders-data.js`。
+* `generate-pref.py` — 偏好设置页面静态多语言接口生成器（生成 `pref.html`）。
 
 ## 🤝 社区与友情链接
 

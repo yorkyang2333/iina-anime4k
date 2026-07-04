@@ -1,7 +1,7 @@
 {
   "name": "anime4k",
-  "version": "1.2.2",
-  "description": "",
+  "version": "1.2.3",
+  "description": "IINA plugin for Anime4K",
   "main": "src/index.js",
   "scripts": {
     "serve-sidebar": "parcel serve ui/sidebar/sidebar.html --dist-dir dist/ui/sidebar",
@@ -9,7 +9,12 @@
     "pack": "npm run build && rm -rf anime4k.iinaplugin anime4k.iinaplgz && mkdir anime4k.iinaplugin && cp -r dist Info.json package.json pref.html anime4k.iinaplugin/ && cd anime4k.iinaplugin && zip -r ../anime4k.iinaplgz .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "yorkyang2333 <yangyork097@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yorkyang2333/iina-anime4k.git"
+  },
+  "homepage": "https://github.com/yorkyang2333/iina-anime4k#readme",
   "license": "GPL-3.0",
   "devDependencies": {
     "@parcel/transformer-sass": "^2.8.3",

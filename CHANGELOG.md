@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.3] - 2026-07-04
+
+### New Features & Changes
+- **Online Repository & Auto-Update Integration**: Added `ghRepo` (`yorkyang2333/iina-anime4k`) and `ghVersion` (`6`) metadata to `Info.json`, enabling IINA's built-in GitHub automatic update checker and linking the "Source" repository in the plugin UI.
+- **Author Website Linking**: Configured `author.url` in `Info.json` and updated `package.json` repository/homepage fields so that IINA displays the "Website" link directly in the plugin management UI.
+- **Developer Documentation & Architecture Guidelines**: Added a comprehensive `CONTRIBUTING.md` developer guide and `.agents/AGENTS.md` rules covering local build scripts, versioning conventions, and IINA CI/CD release automation.
+
 ## [1.2.2] - 2026-07-04
 
 ### Bug Fixes & Improvements

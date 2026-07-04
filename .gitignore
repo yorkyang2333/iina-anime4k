@@ -124,7 +124,6 @@ out
 *.js.map
 *.css.map
 dist/
+src/shaders-data.js
 anime4k.iinaplugin/
 *.iinaplgz
-src/shaders-data.js
-AGENTS.md

@@ -1,11 +1,14 @@
 {
   "name": "Anime4K",
   "identifier": "com.yorkyang2333.anime4k",
-  "version": "1.2.2",
+  "version": "1.2.3",
+  "ghRepo": "yorkyang2333/iina-anime4k",
+  "ghVersion": 6,
   "description": "IINA plugin for Anime4K",
   "author": {
     "name": "yorkyang2333",
-    "email": "yangyork097@gmail.com"
+    "email": "yangyork097@gmail.com",
+    "url": "https://github.com/yorkyang2333/iina-anime4k"
   },
   "entry": "dist/index.js",
   "globalEntry": "dist/global.js",

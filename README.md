@@ -70,13 +70,17 @@ npm run pack
 ```
 Once the build finishes, the packaged plugin `anime4k.iinaplgz` will be generated in the project root directory.
 
-## 👨‍💻 Development Notes
+## 🤝 Contributing & Development
 
+We welcome pull requests and contributions from the community! Please read our [**Contributing Guide (CONTRIBUTING.md)**](CONTRIBUTING.md) for detailed guidelines on local development setup, versioning conventions (`ghVersion`), and IINA's automated release architecture.
+
+### Core Architecture
 * `src/index.js` — The core plugin runtime (shader installation, state persistence, menu synchronization, OSD messaging, and auto-apply logic).
 * `src/shaders.js` — Configuration and mapping for Fast and HQ shader chains.
 * `src/i18n.js` — Full 54-language native localization dictionary and system locale detection engine.
 * `ui/sidebar/` — Web UI components and styling for the IINA sidebar.
 * `build-shaders.py` — Pre-compilation script that processes `Anime4K/glsl/**/*.glsl` and generates `src/shaders-data.js`.
+* `generate-pref.py` — Generates the static multilingual preferences interface (`pref.html`).
 
 ## 🤝 Community & Links
 

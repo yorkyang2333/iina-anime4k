@@ -70,13 +70,17 @@ npm run pack
 ```
 執行完畢後，專案根目錄下即可生成打包好的最新外掛程式包 `anime4k.iinaplgz`。
 
-## 👨‍💻 開發架構說明
+## 🤝 參與開發與貢獻 (Contributing)
 
+我們非常歡迎社群開發者提交 Pull Request 與共建！在參與開發前，請務必閱讀我們的 [**開發者貢獻指南 (CONTRIBUTING.md)**](../CONTRIBUTING.md)，裡面詳細說明了本地開發環境配置、版本號遞增規範 (`ghVersion`) 以及 IINA 的自動化發版架構與打包邏輯。
+
+### 核心專案結構
 * `src/index.js` — 外掛程式核心執行時（著色器自動配置、狀態持久化、選單同步、OSD 訊息與自動載入邏輯）。
 * `src/shaders.js` — Fast 與 HQ 兩檔著色器鏈路與參數對映。
 * `src/i18n.js` — 全量 54 種語言在地化字典與系統語系偵測引擎。
 * `ui/sidebar/` — 側邊欄 Web UI 的前端互動與樣式定義。
 * `build-shaders.py` — 預編譯腳本，讀取並解析 `Anime4K/glsl/**/*.glsl`，捆綁生成 `src/shaders-data.js`。
+* `generate-pref.py` — 偏好設定頁面靜態多語言介面生成器（生成 `pref.html`）。
 
 ## 🤝 社群與友情連結
 
