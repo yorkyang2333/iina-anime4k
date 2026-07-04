@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.2] - 2026-07-04
+
+### Bug Fixes & Improvements
+- **100% System Default Localization**: Expanded `sys_word_map` in the preferences page generator (`generate-pref.py`) to include native translations for the "System Default" phrase across all 54 supported IINA locales.
+- **Codebase Cleanup**: Removed obsolete node build script `build-shaders.js` (superseded by `build-shaders.py`) and unused plugin template boilerplate directory `ui/window/`.
+
 ## [1.2.1] - 2026-07-02
 
 ### Bug Fixes & Improvements
